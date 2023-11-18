@@ -20,7 +20,7 @@ const NavBar = () => {
     },
     {
       name: "Tokens",
-      link: "/https://info.uniswap.org/#/",
+      link: "/Tokens",
     },
     {
       name: "Pools",
