@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import Image from "next/image";
 
 //INTERNAL IMPORT
@@ -10,6 +10,33 @@ import { Token, SearchToken } from "../index";
 import { SwapTokenContext } from "../../Context/SwapContext";
 
 const HeroSection = ({}) => {
+
+    const [fromCurrency, setFromCurrency] = useState("BTC");
+    const [toCurrency, setToCurrency] = useState("ETH");
+    const [numberOfCoins, setNumberOfCoins] = useState(1);
+    const [conversionRate, setConversionRate] = useState(0);
+    const [swappedValue, setSwappedValue] = useState(0);
+
+
+    useEffect(() => {
+      fetch(
+        `https://api.coinbase.com/v2/exchange-rates?currency=${fromCurrency}`
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          const rates = data.data.rates;
+          const rate = rates[toCurrency];
+          setConversionRate(rate);
+          setSwappedValue(numberOfCoins * rate);
+        });
+    }, [fromCurrency, toCurrency, numberOfCoins]);
+
+    const handleNumberOfCoinsChange = (e) => {
+      setNumberOfCoins(e.target.value);
+    };
+
+
+  
   //USESTATE
   const [openSetting, setOpenSetting] = useState(false);
   const [openToken, setOpenToken] = useState(false);
@@ -72,6 +99,8 @@ const HeroSection = ({}) => {
   //JSX
   return (
     <div className={Style.HeroSection}>
+      {/* <div className="py-10">hola</div> */}
+
       <div className={Style.HeroSection_box}>
         <div className={Style.HeroSection_box_heading}>
           <p>Swap</p>
@@ -81,7 +110,7 @@ const HeroSection = ({}) => {
               alt="image"
               width={50}
               height={50}
-              onClick={() => setOpenSetting(true)}
+              // onClick={() => setOpenSetting(true)}
             />
           </div>
         </div>
@@ -89,28 +118,24 @@ const HeroSection = ({}) => {
         <div className={Style.HeroSection_box_input}>
           <input
             type="number"
-            placeholder="0"
-            onChange={(e) => (
-              callOutPut(e.target.value),
-              setSwapAmount(e.target.value),
-              setSearch(true)
-            )}
+            value={numberOfCoins}
+            onChange={handleNumberOfCoinsChange}
           />
-          <button onClick={() => setOpenToken(true)}>
-            <Image
-              src={images.image || images.etherlogo}
-              width={20}
-              height={20}
-              alt="ether"
-            />
-            {tokenOne.symbol || "ETH"}
-            <small>{tokenOne.tokenBalance.slice(0, 7)}</small>
-          </button>
+          <select
+            onChange={(e) => setFromCurrency(e.target.value)}
+            value={fromCurrency}
+          >
+            <option value="BTC">Bitcoin</option>
+            <option value="ETH">Ethereum</option>
+            <option value="LTC">Litecoin</option>
+            <option value="XRP">Ripple</option>
+            <option value="BCH">Bitcoin Cash</option>
+          </select>
         </div>
 
         <div className={Style.HeroSection_box_input}>
           {/* <input type="text" placeholder="0" /> */}
-          <p>
+          {/* <p>
             {search ? (
               <Image
                 src={images.loading}
@@ -121,24 +146,33 @@ const HeroSection = ({}) => {
             ) : (
               tokenSwapOutPut
             )}
-          </p>
-          <button onClick={() => setOpenTokensTwo(true)}>
-            <Image
-              src={tokenTwo.image || images.etherlogo}
-              width={20}
-              height={20}
-              alt="ether"
-            />
-            {tokenTwo.symbol || "ETH"}
-            <small>{tokenTwo.tokenBalance.slice(0, 7)}</small>
-          </button>
-        </div>
+          </p> */}
+          <input
+            type="number"
+            disabled
+            value={swappedValue}
+            onChange={handleNumberOfCoinsChange}
+          />
 
-        {search ? (
+          <select
+            onChange={(e) => setToCurrency(e.target.value)}
+            value={toCurrency}
+          >
+            <option value="ETH">Ethereum</option>
+            <option value="BTC">Bitcoin</option>
+            <option value="LTC">Litecoin</option>
+            <option value="XRP">Ripple</option>
+            <option value="BCH">Bitcoin Cash</option>
+          </select>
+        </div>
+        <label>Conversion Rate: </label>
+        <span>{conversionRate}</span>
+
+        {/* {search ? (
           <Image src={images.loading} width={100} height={40} alt="loading" />
         ) : (
           poolMessage
-        )}
+        )} */}
 
         {account ? (
           <button
@@ -184,3 +218,12 @@ const HeroSection = ({}) => {
 };
 
 export default HeroSection;
+ 
+    
+
+
+
+  
+
+
+ 
