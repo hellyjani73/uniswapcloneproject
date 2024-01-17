@@ -39,6 +39,4 @@ npx hardhat compile
 
 npx hardhat node
 npx hardhat run scripts/deploy.js --network localhost
-# Frontend
-The React-based front-end is located in the src/ directory. Customize the components, styles, and layout as needed for your project.
 
